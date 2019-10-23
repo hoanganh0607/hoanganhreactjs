@@ -21,53 +21,90 @@ class App extends React.Component {
           answerTrue: "4"
         },
         {
-          question: "Con lợn đi bằng mấy chân?",
+          question: "Con người đi bằng mấy chân?",
           answers: ["1", "2", "3", "4"],
-          answerTrue: "4"
+          answerTrue: "2"
         },
         {
-          question: "Con voi đi bằng mấy chân?",
+          question: "Con chim cánh cụt đi bằng mấy chân?",
           answers: ["1", "2", "3", "4"],
-          answerTrue: "4"
+          answerTrue: "2"
         },
         {
           question: "Con cá sấu đi bằng mấy chân?",
           answers: ["1", "2", "3", "4"],
           answerTrue: "4"
         },
-        {
-
-        }
       ],
       timeLeft: ANSWER_TIME,
       currentQuestion: 0,
-      displayAnswerTrue: "none",
-      displayAnswerFalse: "none",
+      userSelectClass: ["Answer", "Answer", "Answer", "Answer", "Answer"],
+      isSelectAnswer: false,
       displayQuestion: "block",
+      displayResultButton: "none",
+      displayQuestionButton: "block",
       displayResult: "none",
+      displayScore: "inline-block",
+      score: 0
     }
   }
 
+  selectQuestion = (index, answer, answerTrue) => {
+    if (!this.state.isSelectAnswer) {
+      // Highlight đáp án người dùng chọn
+      // TODO: Hiển thị đáp án đúng sai và tính điểm
+      const scoreNew = this.state.score
+      const newUserSelectClass = this.state.userSelectClass.map(
+        (selectClass, i) => {
+
+          if (i === index && answer === answerTrue) {
+            selectClass = "Answer true";
+            this.setState({
+              score: scoreNew + 1
+            })
+          }
+          if (i === index && answer !== answerTrue) {
+            selectClass = "Answer false";
+          }
+          return selectClass;
+        }
+      );
+
+      this.setState({
+        userSelectClass: newUserSelectClass,
+        isSelectAnswer: true
+      });
+    }
+  };
 
   //Chuyển câu hỏi
   nextQuestion = () => {
-    if (this.state.currentQuestion <= this.state.quizzes.length - 1) {
+    if (this.state.currentQuestion < this.state.quizzes.length - 1) {
+      this.setState({
+        userSelectClass: ["Answer", "Answer", "Answer", "Answer"],
+        currentQuestion: this.state.currentQuestion + 1,
+        isSelectAnswer: false
+      });
+    }
+    //Hiển thị nút hoàn thành
+    if (this.state.currentQuestion + 1 === this.state.quizzes.length) {
       this.setState(state => ({
-        currentQuestion: state.currentQuestion + 1
-      }));
-    }       
-  }
-  //Hoàn thành phần chơi
-  result = () => {
-    if(this.state.currentQuestion == this.state.quizzes.length){
-      this.setState(state => ({
-        displayResult: "block"
+        displayQuestionButton: "none",
+        displayResultButton: "block",
+
       }));
     }
   }
- 
-  
+  //Hoàn thành phần chơi
+  result = () => {
+    this.setState(state => ({
+      displayResult: "block",
+      displayQuestion: "none",
+      displayScore: "none",
+      displayResultButton: "none"
+    }));
 
+  }
 
   render() {
     return (
@@ -75,18 +112,27 @@ class App extends React.Component {
         <div className="Box">
           <Status
             totalQuestion={this.state.quizzes.length}
-            currentQuestion={this.state.currentQuestion}           
+            currentQuestion={this.state.currentQuestion}
+
           />
           <Question
+            totalQuestion={this.state.quizzes.length}
             quizzes={this.state.quizzes}
             currentQuestion={this.state.currentQuestion}
+            userSelectClass={this}
             nextQuestion={this.nextQuestion}
             displayQuestion={this.state.displayQuestion}
-            displayAnswerTrue={this.state.displayAnswerTrue}
-            displayAnswerFalse={this.state.displayAnswerFalse}
-            selectTrue={this.selectTrue}
             displayResult={this.state.displayResult}
             result={this.result}
+            displayQuestionButton={this.state.displayQuestionButton}
+            displayResultButton={this.state.displayResultButton}
+            score={this.state.score}
+            displayScore={this.state.displayScore}
+
+            selectQuestion={this.selectQuestion}
+            userSelectClass={this.state.userSelectClass}
+
+
           />
         </div>
       </div>
