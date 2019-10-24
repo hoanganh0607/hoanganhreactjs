@@ -6,8 +6,8 @@ function Status(props) {
   return (
     <div className="Header">
       <div className="LeftSide">
-        <div className="ProgressBar" style={{ width: ((progress) * 350) / 100 }}>
-          <span className="Percent">{progress}%</span>
+        <div className="ProgressBar" style={{ width: (progress + props.progressBar) * 350 / 100}} >
+          <span className="Percent">Tiến độ: {progress + props.progressBar}%</span>
         </div>
       </div>
       <div className="RightSide">

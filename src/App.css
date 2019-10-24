@@ -174,3 +174,20 @@
     background: #4caf50c7;
     border-radius: 45px;
 }
+.playReload{
+  margin-top: 30px;
+    padding: 15px;
+    background: #607D8B;
+    border-radius: 50px;
+    font-weight: 600;
+    color: wheat;
+    cursor: pointer;
+}
+.WrongAnswer{
+  margin-left: 25px;
+    padding: 9px;
+    background: #ff615a;
+    color: black;
+    font-weight: 400;
+    border-radius: 8px;
+}

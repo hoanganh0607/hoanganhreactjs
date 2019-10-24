@@ -12,42 +12,46 @@ class App extends React.Component {
       quizzes: [
         {
           question: "Con chó đi bằng mấy chân?",
-          answers: ["1", "2", "3", "4"],
-          answerTrue: "4"
+          answers: ["1 chân", "2 chân", "3 chân", "4 chân"],
+          answerTrue: "4 chân"
         },
         {
           question: "Con mèo đi bằng mấy chân?",
-          answers: ["1", "2", "3", "4"],
-          answerTrue: "4"
+          answers: ["1 chân", "2 chân", "3 chân", "4 chân"],
+          answerTrue: "4 chân"
         },
         {
           question: "Con người đi bằng mấy chân?",
-          answers: ["1", "2", "3", "4"],
-          answerTrue: "2"
+          answers: ["1 chân", "2 chân", "3 chân", "4 chân"],
+          answerTrue: "2 chân"
         },
         {
           question: "Con chim cánh cụt đi bằng mấy chân?",
-          answers: ["1", "2", "3", "4"],
-          answerTrue: "2"
+          answers: ["1 chân", "2 chân", "3 chân", "4 chân"],
+          answerTrue: "2 chân"
         },
         {
           question: "Con cá sấu đi bằng mấy chân?",
-          answers: ["1", "2", "3", "4"],
-          answerTrue: "4"
+          answers: ["1 chân", "2 chân", "3 chân", "4 chân"],
+          answerTrue: "4 chân"
         },
       ],
       timeLeft: ANSWER_TIME,
       currentQuestion: 0,
       userSelectClass: ["Answer", "Answer", "Answer", "Answer", "Answer"],
       isSelectAnswer: false,
+      progressBar: 0,
       displayQuestion: "block",
       displayResultButton: "none",
       displayQuestionButton: "block",
       displayResult: "none",
       displayScore: "inline-block",
+      displayPlayReload: "none",
+      displayWrongAnswer: ["none", "none", "none", "none", "none"],
       score: 0
     }
   }
+
 
   selectQuestion = (index, answer, answerTrue) => {
     if (!this.state.isSelectAnswer) {
@@ -56,7 +60,6 @@ class App extends React.Component {
       const scoreNew = this.state.score
       const newUserSelectClass = this.state.userSelectClass.map(
         (selectClass, i) => {
-
           if (i === index && answer === answerTrue) {
             selectClass = "Answer true";
             this.setState({
@@ -65,14 +68,27 @@ class App extends React.Component {
           }
           if (i === index && answer !== answerTrue) {
             selectClass = "Answer false";
+            this.setState({
+              displayWrongAnswer: "block",
+            })
           }
           return selectClass;
         }
       );
-
+      //Hiển thị đáp án đúng khi trả lời sai
+      const newWrongAnswer = this.state.displayWrongAnswer.map(
+        (WrongAnswer, i) => {
+          if (i === index && answer !== answerTrue) {
+            WrongAnswer = "inline-block";
+          }
+          return WrongAnswer;
+        }
+      );
       this.setState({
+        displayWrongAnswer: newWrongAnswer,
         userSelectClass: newUserSelectClass,
-        isSelectAnswer: true
+        isSelectAnswer: true,
+
       });
     }
   };
@@ -80,10 +96,12 @@ class App extends React.Component {
   //Chuyển câu hỏi
   nextQuestion = () => {
     if (this.state.currentQuestion < this.state.quizzes.length - 1) {
+      console.log(this.progressBar)
       this.setState({
-        userSelectClass: ["Answer", "Answer", "Answer", "Answer"],
+        userSelectClass: ["Answer", "Answer", "Answer", "Answer", "Answer"],
+        displayWrongAnswer: ["none", "none", "none", "none", "none"],
         currentQuestion: this.state.currentQuestion + 1,
-        isSelectAnswer: false
+        isSelectAnswer: false,
       });
     }
     //Hiển thị nút hoàn thành
@@ -91,19 +109,24 @@ class App extends React.Component {
       this.setState(state => ({
         displayQuestionButton: "none",
         displayResultButton: "block",
-
+        //hiển thị thanh tiến độ 100%
+        progressBar: 100 - ((state.quizzes.length - 1) / state.quizzes.length * 100)
       }));
     }
   }
-  //Hoàn thành phần chơi
+  //Kết quả phần chơi
   result = () => {
-    this.setState(state => ({
+    this.setState({
       displayResult: "block",
       displayQuestion: "none",
       displayScore: "none",
-      displayResultButton: "none"
-    }));
-
+      displayResultButton: "none",
+      displayPlayReload: "inline-block"
+    });
+  }
+  //Chơi lại
+  playReloadButton = () => {
+    window.location.reload();
   }
 
   render() {
@@ -113,6 +136,7 @@ class App extends React.Component {
           <Status
             totalQuestion={this.state.quizzes.length}
             currentQuestion={this.state.currentQuestion}
+            progressBar={this.state.progressBar}
 
           />
           <Question
@@ -128,11 +152,11 @@ class App extends React.Component {
             displayResultButton={this.state.displayResultButton}
             score={this.state.score}
             displayScore={this.state.displayScore}
-
             selectQuestion={this.selectQuestion}
             userSelectClass={this.state.userSelectClass}
-
-
+            playReload={this.state.displayPlayReload}
+            playReloadButton={this.playReloadButton}
+            displayWrongAnswer={this.state.displayWrongAnswer}
           />
         </div>
       </div>
